@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart - E-Commerce</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .product-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+    }
+    .quantity-control {
+      display: flex;
+      align-items: center;
+    }
+    .quantity-control button {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .quantity-control input {
+      width: 50px;
+      text-align: center;
+      margin: 0 8px;
+    }
+    .cart-empty {
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .cart-empty i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Navigation -->
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+          <a class="navbar-brand" href="/">E-Commerce</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/products.html">Products</a>
+              </li>
+              <li class="nav-item active">
+                <a class="nav-link" href="/cart.html">Cart</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/orders.html">Orders</a>
+              </li>
+            </ul>
+            <div class="navbar-nav">
+              <a class="nav-link" href="/profile.html" id="profileLink">Profile</a>
+              <a class="nav-link" href="/login.html" id="loginLink">Login</a>
+              <a class="nav-link d-none" href="#" id="logoutLink">Logout</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Main Content -->
+      <div class="container my-5">
+        <h1 class="text-center mb-4">Your Shopping Cart</h1>
+        
+        <div id="cartContainer">
+          <!-- Cart loading indicator -->
+          <div id="cartLoading" class="text-center my-5">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading your cart...</p>
+          </div>
+          
+          <!-- Cart content will be populated here -->
+          <div id="cartContent" class="d-none">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="cartItemsContainer">
+                  <!-- Cart items will be added here dynamically -->
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                    <td id="cartTotal">$0.00</td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+              <a href="/products.html" class="btn btn-outline-primary">Continue Shopping</a>
+              <a href="/checkout.html" class="btn btn-success" id="checkoutBtn">Proceed to Checkout</a>
+            </div>
+          </div>
+          
+          <!-- Empty cart message -->
+          <div id="emptyCart" class="d-none cart-empty">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+              <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+            </svg>
+            <h3 class="mt-3">Your cart is empty</h3>
+            <p class="text-muted">Add items to your cart to see them here</p>
+            <a href="/products.html" class="btn btn-primary mt-3">Browse Products</a>
+          </div>
+          
+          <!-- Error message -->
+          <div id="cartError" class="d-none">
+            <div class="alert alert-danger" role="alert">
+              <h4 class="alert-heading">Error Loading Cart</h4>
+              <p id="errorMessage">There was a problem loading your cart. Please try again later.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="bg-light py-4 mt-auto">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6 text-center text-md-start">
+              <p class="mb-0">&copy; 2025 E-Commerce System. All rights reserved.</p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+              <p class="mb-0">Developed with Vue.js and Django</p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check if user is logged in
+      const token = localStorage.getItem('token');
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      
+      if (!token || !userData) {
+        // Redirect to login if not logged in
+        window.location.href = '/login.html?redirect=/cart.html';
+        return;
+      }
+
+      // Update navigation UI based on login status
+      updateNavbar(token, userData);
+      
+      // Load cart contents
+      await loadCart();
+    });
+
+    // Update navigation bar based on login status
+    function updateNavbar(token, userData) {
+      const loginLink = document.getElementById('loginLink');
+      const logoutLink = document.getElementById('logoutLink');
+      const profileLink = document.getElementById('profileLink');
+      
+      if (token) {
+        loginLink.classList.add('d-none');
+        logoutLink.classList.remove('d-none');
+        
+        logoutLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          localStorage.removeItem('token');
+          localStorage.removeItem('userData');
+          window.location.href = '/';
+        });
+      } else {
+        loginLink.classList.remove('d-none');
+        logoutLink.classList.add('d-none');
+      }
+    }
+
+    // Load cart contents from the API
+    async function loadCart() {
+      const cartLoading = document.getElementById('cartLoading');
+      const cartContent = document.getElementById('cartContent');
+      const emptyCart = document.getElementById('emptyCart');
+      const cartError = document.getElementById('cartError');
+      
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/cart/', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const cart = await response.json();
+        
+        // Hide loading indicator
+        cartLoading.classList.add('d-none');
+        
+        // Check if cart is empty
+        if (!cart.items || cart.items.length === 0) {
+          emptyCart.classList.remove('d-none');
+          return;
+        }
+        
+        // Display cart content
+        renderCartItems(cart);
+        cartContent.classList.remove('d-none');
+        
+      } catch (error) {
+        console.error('Error loading cart:', error);
+        cartLoading.classList.add('d-none');
+        
+        // Show error message
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.textContent = error.message || 'Failed to load your cart. Please try again later.';
+        cartError.classList.remove('d-none');
+      }
+    }
+
+    // Render cart items in the table
+    function renderCartItems(cart) {
+      const cartItemsContainer = document.getElementById('cartItemsContainer');
+      const cartTotal = document.getElementById('cartTotal');
+      
+      // Clear previous content
+      cartItemsContainer.innerHTML = '';
+      
+      // Add each item to the table
+      cart.items.forEach(item => {
+        const row = document.createElement('tr');
+        
+        // Calculate item total
+        const itemTotal = item.quantity * parseFloat(item.product.price);
+        
+        row.innerHTML = `
+          <td>
+            <div class="d-flex align-items-center">
+              <img src="${item.product.image_url}" alt="${item.product.name}" class="product-image me-3">
+              <div>
+                <h6 class="mb-0">${item.product.name}</h6>
+                <small class="text-muted">${item.product.description.substring(0, 50)}...</small>
+              </div>
+            </div>
+          </td>
+          <td>$${parseFloat(item.product.price).toFixed(2)}</td>
+          <td>
+            <div class="quantity-control">
+              <button class="btn btn-sm btn-outline-secondary decrease-quantity" data-product-id="${item.product.id}">-</button>
+              <input type="number" class="form-control quantity-input" value="${item.quantity}" min="1" data-product-id="${item.product.id}">
+              <button class="btn btn-sm btn-outline-secondary increase-quantity" data-product-id="${item.product.id}">+</button>
+            </div>
+          </td>
+          <td>$${itemTotal.toFixed(2)}</td>
+          <td>
+            <button class="btn btn-sm btn-danger remove-item" data-product-id="${item.product.id}">Remove</button>
+          </td>
+        `;
+        
+        cartItemsContainer.appendChild(row);
+      });
+      
+      // Update cart total
+      cartTotal.textContent = `$${parseFloat(cart.total_price).toFixed(2)}`;
+      
+      // Add event listeners for buttons
+      addButtonEventListeners();
+    }
+
+    // Add event listeners to quantity controls and remove buttons
+    function addButtonEventListeners() {
+      // Increase quantity buttons
+      document.querySelectorAll('.increase-quantity').forEach(button => {
+        button.addEventListener('click', async () => {
+          const productId = button.getAttribute('data-product-id');
+          const inputElement = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+          const newQuantity = parseInt(inputElement.value) + 1;
+          
+          await updateCartItemQuantity(productId, newQuantity);
+        });
+      });
+      
+      // Decrease quantity buttons
+      document.querySelectorAll('.decrease-quantity').forEach(button => {
+        button.addEventListener('click', async () => {
+          const productId = button.getAttribute('data-product-id');
+          const inputElement = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+          const currentQuantity = parseInt(inputElement.value);
+          
+          if (currentQuantity > 1) {
+            const newQuantity = currentQuantity - 1;
+            await updateCartItemQuantity(productId, newQuantity);
+          }
+        });
+      });
+      
+      // Quantity input fields
+      document.querySelectorAll('.quantity-input').forEach(input => {
+        input.addEventListener('change', async () => {
+          const productId = input.getAttribute('data-product-id');
+          let newQuantity = parseInt(input.value);
+          
+          // Ensure quantity is at least 1
+          if (newQuantity < 1) {
+            newQuantity = 1;
+            input.value = 1;
+          }
+          
+          await updateCartItemQuantity(productId, newQuantity);
+        });
+      });
+      
+      // Remove item buttons
+      document.querySelectorAll('.remove-item').forEach(button => {
+        button.addEventListener('click', async () => {
+          const productId = button.getAttribute('data-product-id');
+          await removeCartItem(productId);
+        });
+      });
+    }
+
+    // Update cart item quantity
+    async function updateCartItemQuantity(productId, quantity) {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/cart/update_quantity/', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            product_id: productId,
+            quantity: quantity
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to update quantity');
+        }
+        
+        // Reload the cart to reflect changes
+        await loadCart();
+        
+      } catch (error) {
+        console.error('Error updating quantity:', error);
+        alert('Failed to update quantity. Please try again.');
+      }
+    }
+
+    // Remove item from cart
+    async function removeCartItem(productId) {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/cart/remove_item/', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            product_id: productId
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to remove item');
+        }
+        
+        // Reload the cart to reflect changes
+        await loadCart();
+        
+      } catch (error) {
+        console.error('Error removing item:', error);
+        alert('Failed to remove item. Please try again.');
+      }
+    }
+  </script>
+</body>
+</html>

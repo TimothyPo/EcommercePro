@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - E-Commerce System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+  <style>
+    html, body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+    }
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .main-content {
+      flex: 1;
+      padding-bottom: 2rem;
+    }
+    .register-container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="app-container">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+          <a class="navbar-brand" href="/">
+            <i class="bi bi-shop me-2"></i>
+            E-Shop
+          </a>
+          <div class="ms-auto">
+            <a class="btn btn-outline-primary me-2" href="/login.html">Login</a>
+            <a class="btn btn-primary" href="/register.html">Register</a>
+          </div>
+        </div>
+      </nav>
+      
+      <div class="container py-5 main-content">
+        <div class="register-container bg-white">
+          <h2 class="text-center mb-4">Create an Account</h2>
+          <form id="registerForm">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="firstName" class="form-label">First Name</label>
+                <input type="text" class="form-control" id="firstName" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="lastName" class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="lastName" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input type="text" class="form-control" id="username" required>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" required>
+            </div>
+            <div class="mb-3">
+              <label for="passwordConfirm" class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" id="passwordConfirm" required>
+            </div>
+            <!-- Admin role is only assigned through backend -->
+            <div class="alert alert-danger d-none" id="registerError" style="margin-bottom: 15px; font-weight: bold;"></div>
+            <button type="submit" class="btn btn-primary w-100 mb-3">Register</button>
+            <p class="text-center mb-0">
+              Already have an account? <a href="/login.html">Login here</a>
+            </p>
+          </form>
+        </div>
+      </div>
+      
+      <footer class="bg-light py-4 mt-auto">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6 text-center text-md-start">
+              <p class="mb-0">&copy; 2025 E-Commerce System. All rights reserved.</p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+              <p class="mb-0">Developed with Vue.js and Django</p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const registerForm = document.getElementById('registerForm');
+      const registerError = document.getElementById('registerError');
+      
+      registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const passwordConfirm = document.getElementById('passwordConfirm').value;
+        const firstName = document.getElementById('firstName').value;
+        const lastName = document.getElementById('lastName').value;
+        // All users register as regular customers, admin role is assigned through backend
+        
+        // Validate password match
+        if (password !== passwordConfirm) {
+          registerError.textContent = 'Passwords do not match';
+          registerError.classList.remove('d-none');
+          return;
+        }
+        
+        try {
+          const response = await fetch('/api/auth/register/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username,
+              email,
+              password,
+              password_confirm: passwordConfirm,
+              first_name: firstName,
+              last_name: lastName,
+              is_admin: false // All users register as regular customers
+            })
+          });
+          
+          const responseData = await response.json();
+          
+          if (!response.ok) {
+            // Format error messages
+            let errorMessage = '';
+            if (responseData.username) {
+              errorMessage += 'Username: ' + responseData.username.join(', ') + '<br>';
+            }
+            if (responseData.email) {
+              errorMessage += 'Email: ' + responseData.email.join(', ') + '<br>';
+            }
+            if (responseData.password) {
+              errorMessage += 'Password: ' + responseData.password.join(', ') + '<br>';
+            }
+            if (responseData.detail) {
+              errorMessage += responseData.detail;
+            }
+            
+            // If no specific error was found, show generic message
+            if (!errorMessage) {
+              errorMessage = 'Registration failed. This username may already be taken.';
+            }
+            
+            throw new Error(errorMessage);
+          }
+          
+          // Redirect to login
+          alert('Registration successful! Please log in.');
+          window.location.href = '/login.html';
+          
+        } catch (error) {
+          console.error('Registration failed:', error);
+          registerError.innerHTML = error.message;
+          registerError.classList.remove('d-none');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

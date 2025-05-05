@@ -1,0 +1,75 @@
+modules = ["python-3.11", "nodejs-20", "postgresql-16"]
+
+[nix]
+channel = "stable-24_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Backend Server"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Frontend Server"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "E-Commerce Application"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "E-Commerce API"
+
+[[workflows.workflow]]
+name = "Backend Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd backend && pip install django djangorestframework django-cors-headers django-filter djangorestframework-simplejwt psycopg2-binary && python server.py"
+waitForPort = 8000
+
+[[workflows.workflow]]
+name = "Frontend Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd frontend && node server.js"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "E-Commerce Application"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd frontend && node server.js"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "E-Commerce API"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd backend && pip install django djangorestframework django-cors-headers django-filter djangorestframework-simplejwt psycopg2-binary && python server.py"
+waitForPort = 8000
+
+[deployment]
+run = ["sh", "-c", "cd backend && pip install django djangorestframework django-cors-headers django-filter djangorestframework-simplejwt psycopg2-binary && python server.py"]
+
+[[ports]]
+localPort = 5000
+externalPort = 5000
+
+[[ports]]
+localPort = 8000
+externalPort = 80
